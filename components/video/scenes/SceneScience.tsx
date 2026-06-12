@@ -58,7 +58,7 @@ const FruitBowlMontage: React.FC<{ frame: number }> = ({ frame }) => (
     <rect width={1920} height={1080} fill="#374151" />
     <ellipse cx={960} cy={700} rx={280} ry={80} fill="#9CA3AF" />
     <path d="M 680 700 Q 960 580 1240 700 L 1200 780 Q 960 720 720 780 Z" fill="#D1D5DB" />
-    <BananaCharacter frame={frame} mode="scientist" />
+    <BananaCharacter frame={frame} mode="fruitbowl" />
     {[0, 1].map((i) => {
       const bounce = 1 + Math.sin(frame * 0.22 + i * Math.PI) * 0.18;
       const cx = i === 0 ? 620 : 1300;

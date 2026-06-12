@@ -86,11 +86,18 @@ const DizzyStars: React.FC<{ frame: number }> = ({ frame }) => {
 const RocketDrift: React.FC<{ frame: number }> = ({ frame }) => {
   const driftX = 960 + Math.sin(frame * 0.03) * 40;
   const driftY = 500 + Math.cos(frame * 0.025) * 20;
+  const showKnocked = frame >= 2466 && frame < 2550;
 
   return (
     <g transform={`translate(${driftX}, ${driftY})`}>
       <ellipse cx={0} cy={60} rx={55} ry={120} fill="#22C55E" />
       <ellipse cx={0} cy={-20} rx={45} ry={50} fill="#4ADE80" opacity={0.5} />
+      <circle cx={0} cy={-30} r={38} fill="none" stroke="#94A3B8" strokeWidth={3} opacity={0.5} />
+      {showKnocked ? (
+        <BananaCharacter frame={frame} mode="knocked" />
+      ) : (
+        <BananaCharacter frame={frame} mode="astronaut" />
+      )}
     </g>
   );
 };
@@ -140,7 +147,6 @@ export const SceneFinale: React.FC<SceneFinaleProps> = ({
       )}
       {frame >= 2466 && frame < 2550 && (
         <>
-          <BananaCharacter frame={frame} mode="knocked" />
           <GlassShards frame={frame} />
           <DizzyStars frame={frame} />
         </>

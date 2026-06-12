@@ -3,7 +3,7 @@ import { Easing, interpolate } from "remotion";
 
 interface BananaCharacterProps {
   frame: number;
-  mode?: "assault" | "scientist" | "teen" | "celebrity" | "astronaut" | "knocked";
+  mode?: "assault" | "scientist" | "teen" | "celebrity" | "fruitbowl" | "astronaut" | "knocked";
   spineSag?: number;
   yawnRadius?: number;
 }
@@ -53,6 +53,10 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
   } else if (mode === "teen") {
     x = 960;
     y = 680;
+    showSwatter = false;
+  } else if (mode === "fruitbowl") {
+    x = 960;
+    y = 580;
     showSwatter = false;
   } else if (mode === "celebrity") {
     x = interpolate(

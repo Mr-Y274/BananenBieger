@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "remotion:studio": "remotion studio remotion/Root.tsx",
+    "remotion:render": "remotion render remotion/Root.tsx BananaComposition out/video.mp4"
   },
   "dependencies": {
     "@remotion/player": "^4.0.272",
@@ -16,6 +18,7 @@
     "remotion": "^4.0.272"
   },
   "devDependencies": {
+    "@remotion/cli": "^4.0.272",
     "@eslint/eslintrc": "^3.3.1",
     "@tailwindcss/postcss": "^4.1.8",
     "@types/node": "^22.15.29",
