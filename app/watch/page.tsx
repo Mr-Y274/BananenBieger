@@ -2,10 +2,12 @@
 
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import type { VideoProps } from "@/components/video/types";
 
-const VideoPlayer = dynamic<VideoProps>(
-  () => import("@/components/video/VideoPlayer").then((m) => m.VideoPlayer),
+const RenderedVideoPlayer = dynamic(
+  () =>
+    import("@/components/video/RenderedVideoPlayer").then(
+      (m) => m.RenderedVideoPlayer
+    ),
   {
     ssr: false,
     loading: () => (
@@ -37,8 +39,6 @@ interface SuggestedVideo {
 }
 
 export default function WatchPage() {
-  const [subtitlesEnabled, setSubtitlesEnabled] = useState<boolean>(true);
-  const [subtitleLang, setSubtitleLang] = useState<"de" | "en">("de");
   const [isSubscribed, setIsSubscribed] = useState<boolean>(false);
   const [subsCount, setSubsCount] = useState<number>(1245892);
   const [likesCount, setLikesCount] = useState<number>(45201);
@@ -206,48 +206,7 @@ export default function WatchPage() {
       <main className="max-w-[1750px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 p-4 lg:p-8">
         <section className="lg:col-span-2 flex flex-col">
           <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-200/90 relative group">
-            <VideoPlayer
-              showSubtitles={subtitlesEnabled}
-              subtitleLanguage={subtitleLang}
-            />
-          </div>
-
-          <div className="mt-4 bg-white p-3 rounded-xl border border-slate-200 flex flex-wrap gap-4 items-center justify-between shadow-sm">
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Engine Controls:
-              </span>
-              <button
-                onClick={() => setSubtitlesEnabled(!subtitlesEnabled)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-black tracking-wide transition-all duration-150 ${
-                  subtitlesEnabled
-                    ? "bg-red-600 text-white shadow-sm shadow-red-600/30 ring-2 ring-red-500/20"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                CC Subtitles
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <label
-                htmlFor="lang-select"
-                className="text-xs font-medium text-slate-600"
-              >
-                Sprache:
-              </label>
-              <select
-                id="lang-select"
-                value={subtitleLang}
-                onChange={(e) =>
-                  setSubtitleLang(e.target.value as "de" | "en")
-                }
-                className="bg-slate-50 border border-slate-200 rounded-lg p-1.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-red-500 cursor-pointer"
-              >
-                <option value="de">Deutsch (Original)</option>
-                <option value="en">English (Dubbed)</option>
-              </select>
-            </div>
+            <RenderedVideoPlayer />
           </div>
 
           <h1 className="text-2xl font-black mt-5 tracking-tight text-slate-950 leading-tight">

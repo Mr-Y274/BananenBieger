@@ -21,6 +21,7 @@ export const VideoPlayer: FC<VideoProps> = (inputProps) => (
     style={{ width: "100%", height: "100%" }}
     controls
     acknowledgeRemotionLicense
+    numberOfSharedAudioTags={16}
     inputProps={inputProps}
   />
 );
