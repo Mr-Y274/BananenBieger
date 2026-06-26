@@ -4,11 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "dev:clean": "rm -rf .next && next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "remotion:studio": "remotion studio remotion/Root.tsx",
-    "remotion:render": "remotion render remotion/Root.tsx BananaComposition out/video.mp4"
+    "remotion:render": "remotion render remotion/Root.tsx BananaComposition out/video.mp4",
+    "sounds:generate": "node scripts/generate-sounds.mjs"
   },
   "dependencies": {
     "@remotion/player": "^4.0.272",

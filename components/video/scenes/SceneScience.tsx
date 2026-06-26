@@ -9,23 +9,43 @@ interface SceneScienceProps {
   subtitleLanguage: "de" | "en";
 }
 
-const ChalkboardDrawing: React.FC = () => (
-  <g transform="translate(1200, 200)">
-    <rect x={0} y={0} width={500} height={350} fill="#065F46" stroke="#34D399" strokeWidth={3} rx={8} />
-    <path
-      d="M 80 280 L 120 120 L 200 200 L 280 80 L 350 250"
-      fill="none"
-      stroke="#FDE68A"
-      strokeWidth={4}
-      strokeLinecap="round"
-    />
-    <circle cx={350} cy={80} r={35} fill="none" stroke="#FBBF24" strokeWidth={3} />
-    <path d="M 200 200 L 250 280 L 300 240" fill="none" stroke="#FDE68A" strokeWidth={3} />
-    <text x={250} y={40} textAnchor="middle" fill="#A7F3D0" fontSize={18} fontFamily="monospace">
-      NUKLEAR-SONNE
-    </text>
-  </g>
-);
+const ChalkboardDrawing: React.FC<{ frame: number }> = ({ frame }) => {
+  const hangingBananas = [0, 1, 2].map((i) => {
+    const stemX = 180 + i * 120;
+    const length = 80 + i * 15;
+    const sway = Math.sin(frame * 0.05 + i) * 8;
+    return { stemX, length, sway, i };
+  });
+
+  return (
+    <g transform="translate(1200, 200)">
+      <rect x={0} y={0} width={500} height={350} fill="#065F46" stroke="#34D399" strokeWidth={3} rx={8} />
+      <path
+        d="M 80 280 L 120 120 L 200 200 L 280 80 L 350 250"
+        fill="none"
+        stroke="#FDE68A"
+        strokeWidth={4}
+        strokeLinecap="round"
+      />
+      <circle cx={350} cy={80} r={35} fill="none" stroke="#FBBF24" strokeWidth={3} />
+      <path d="M 200 200 L 250 280 L 300 240" fill="none" stroke="#FDE68A" strokeWidth={3} />
+      {hangingBananas.map(({ stemX, length, sway, i }) => (
+        <g key={i}>
+          <line x1={stemX} y1={60} x2={stemX + sway} y2={60 + length} stroke="#78350F" strokeWidth={3} />
+          <path
+            d={`M ${stemX + sway - 12} ${60 + length} Q ${stemX + sway} ${60 + length + 35} ${stemX + sway + 12} ${60 + length + 5} Q ${stemX + sway} ${60 + length + 25} ${stemX + sway - 12} ${60 + length} Z`}
+            fill="#FFD54F"
+            stroke="#F9A825"
+            strokeWidth={2}
+          />
+        </g>
+      ))}
+      <text x={250} y={40} textAnchor="middle" fill="#A7F3D0" fontSize={18} fontFamily="monospace">
+        NUKLEAR-SONNE
+      </text>
+    </g>
+  );
+};
 
 const LivingRoom: React.FC<{ spineSag: number; yawnRadius: number; frame: number }> = ({
   spineSag,
@@ -53,66 +73,111 @@ const LivingRoom: React.FC<{ spineSag: number; yawnRadius: number; frame: number
   </>
 );
 
-const FruitBowlMontage: React.FC<{ frame: number }> = ({ frame }) => (
-  <>
-    <rect width={1920} height={1080} fill="#374151" />
-    <ellipse cx={960} cy={700} rx={280} ry={80} fill="#9CA3AF" />
-    <path d="M 680 700 Q 960 580 1240 700 L 1200 780 Q 960 720 720 780 Z" fill="#D1D5DB" />
-    <BananaCharacter frame={frame} mode="fruitbowl" />
-    {[0, 1].map((i) => {
-      const bounce = 1 + Math.sin(frame * 0.22 + i * Math.PI) * 0.18;
-      const cx = i === 0 ? 620 : 1300;
-      return (
-        <g key={i} transform={`translate(${cx}, 620) scale(1, ${bounce})`}>
-          <circle cx={0} cy={0} r={40} fill="#7C3AED" />
-          <circle cx={-10} cy={-5} r={5} fill="#FFF" />
-          <circle cx={10} cy={-5} r={5} fill="#FFF" />
-        </g>
-      );
-    })}
-  </>
-);
+const FruitBowlMontage: React.FC<{ frame: number }> = ({ frame }) => {
+  const growScale = interpolate(frame, [1350, 1470], [1.0, 1.4], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
 
-const ConcertMontage: React.FC<{ frame: number }> = ({ frame }) => (
-  <>
-    <rect width={1920} height={1080} fill="#0F172A" />
-    {[0, 1, 2].map((i) => {
-      const angle = Math.cos(frame * 0.05 + i * 2) * 25;
-      return (
-        <g key={i} transform={`translate(${480 + i * 480}, 100) rotate(${angle})`}>
-          <polygon points="0,0 -60,400 60,400" fill="url(#spotlightGrad)" opacity={0.7} />
-        </g>
-      );
-    })}
-    <defs>
-      <linearGradient id="spotlightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.9} />
-        <stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
-      </linearGradient>
-    </defs>
-    <BananaCharacter frame={frame} mode="scientist" />
-    {Array.from({ length: 20 }, (_, index) => {
-      const baseX = 100 + index * 90;
-      const baseY = 900;
-      const jumpY = baseY - Math.abs(Math.sin(frame * 0.28 + index * 0.45)) * 45;
-      return <circle key={index} cx={baseX} cy={jumpY} r={18} fill="#22C55E" />;
-    })}
-  </>
-);
+  return (
+    <>
+      <rect width={1920} height={1080} fill="#374151" />
+      <ellipse cx={960} cy={700} rx={280} ry={80} fill="#9CA3AF" />
+      <path d="M 680 700 Q 960 580 1240 700 L 1200 780 Q 960 720 720 780 Z" fill="#D1D5DB" />
+      <BananaCharacter frame={frame} mode="fruitbowl" characterScale={growScale} />
+      {[0, 1].map((i) => {
+        const bounce = 1 + Math.sin(frame * 0.22 + i * Math.PI) * 0.18;
+        const cx = i === 0 ? 620 : 1300;
+        return (
+          <g key={i} transform={`translate(${cx}, 620) scale(1, ${bounce})`}>
+            <circle cx={0} cy={0} r={40} fill="#7C3AED" />
+            <circle cx={-10} cy={-5} r={5} fill="#FFF" />
+            <circle cx={10} cy={-5} r={5} fill="#FFF" />
+          </g>
+        );
+      })}
+      {frame >= 1400 && (
+        <>
+          {[0, 1, 2].map((i) => (
+            <polygon
+              key={i}
+              points="0,0 -40,500 40,500"
+              fill="url(#spotlightGradFruit)"
+              opacity={0.4}
+              transform={`translate(${480 + i * 480}, 100) rotate(${Math.cos(frame * 0.05 + i) * 15})`}
+            />
+          ))}
+          <defs>
+            <linearGradient id="spotlightGradFruit" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.8} />
+              <stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+        </>
+      )}
+    </>
+  );
+};
 
-const RedCarpetMontage: React.FC<{ frame: number }> = ({ frame }) => (
-  <>
-    <rect width={1920} height={1080} fill="#1E1B4B" />
-    <path d="M 0 850 L 1920 850 L 1920 1080 L 0 1080 Z" fill="#DC2626" />
-    <BananaCharacter frame={frame} mode="celebrity" />
-    {[680, 1240].map((cx) => (
-      <g key={cx} transform={`translate(${cx}, 720)`}>
-        <rect x={-40} y={-80} width={80} height={120} fill="#78350F" rx={16} />
-        <rect x={-25} y={-60} width={50} height={12} fill="#000" rx={2} />
-      </g>
-    ))}
-  </>
-);
+const ConcertMontage: React.FC<{ frame: number }> = ({ frame }) => {
+  const growScale = interpolate(frame, [1500, 1620], [1.5, 3.2], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <>
+      <rect width={1920} height={1080} fill="#0F172A" />
+      {[0, 1, 2].map((i) => {
+        const angle = Math.cos(frame * 0.05 + i * 2) * 25;
+        return (
+          <g key={i} transform={`translate(${480 + i * 480}, 100) rotate(${angle})`}>
+            <polygon points="0,0 -60,400 60,400" fill="url(#spotlightGrad)" opacity={0.7} />
+          </g>
+        );
+      })}
+      <defs>
+        <linearGradient id="spotlightGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity={0.9} />
+          <stop offset="100%" stopColor="#FFFFFF" stopOpacity={0} />
+        </linearGradient>
+      </defs>
+      <BananaCharacter
+        frame={frame}
+        mode="scientist"
+        characterScale={growScale}
+        showMuscles={frame >= 1500}
+      />
+      {Array.from({ length: 20 }, (_, index) => {
+        const baseX = 100 + index * 90;
+        const baseY = 900;
+        const jumpY = baseY - Math.abs(Math.sin(frame * 0.28 + index * 0.45)) * 45;
+        return <circle key={index} cx={baseX} cy={jumpY} r={18} fill="#22C55E" />;
+      })}
+    </>
+  );
+};
+
+const RedCarpetMontage: React.FC<{ frame: number }> = ({ frame }) => {
+  const growScale = interpolate(frame, [1650, 1770], [3.2, 4.0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  return (
+    <>
+      <rect width={1920} height={1080} fill="#1E1B4B" />
+      <path d="M 0 850 L 1920 850 L 1920 1080 L 0 1080 Z" fill="#DC2626" />
+      <BananaCharacter frame={frame} mode="celebrity" characterScale={growScale} showMuscles />
+      {[680, 1240].map((cx) => (
+        <g key={cx} transform={`translate(${cx}, 720)`}>
+          <rect x={-40} y={-80} width={80} height={120} fill="#78350F" rx={16} />
+          <rect x={-25} y={-60} width={50} height={12} fill="#000" rx={2} />
+        </g>
+      ))}
+    </>
+  );
+};
 
 const SpaceExpedition: React.FC<{ frame: number }> = ({ frame }) => {
   const stars = Array.from({ length: 60 }, (_, i) => ({
@@ -130,6 +195,8 @@ const SpaceExpedition: React.FC<{ frame: number }> = ({ frame }) => {
     frame >= 1920
       ? 700 - Math.pow((frame - 1920) / 30, 3) * 400
       : 700;
+
+  const showBoarding = frame >= 1860 && frame < 1920;
 
   return (
     <>
@@ -159,28 +226,38 @@ const SpaceExpedition: React.FC<{ frame: number }> = ({ frame }) => {
           <stop offset="100%" stopColor="#DC2626" stopOpacity={0} />
         </linearGradient>
       </defs>
-      <g transform={`translate(${960 + jitterX}, ${rocketY})`}>
-        <ellipse cx={0} cy={60} rx={55} ry={120} fill="#22C55E" />
-        <ellipse cx={0} cy={-20} rx={45} ry={50} fill="#4ADE80" opacity={0.5} />
-        <circle cx={0} cy={-30} r={38} fill="none" stroke="#94A3B8" strokeWidth={3} opacity={0.5} />
-        {frame >= 1880 && frame < 1950 && (
-          <>
-            <path
-              d={`M -20 120 Q ${Math.sin(frame) * 10} 180 0 220 Q ${Math.cos(frame) * 10} 180 20 120`}
-              fill="url(#exhaust1)"
-            />
-            <path
-              d={`M -10 120 Q ${Math.sin(frame * 1.5) * 8} 170 0 200 Q ${Math.cos(frame * 1.5) * 8} 170 10 120`}
-              fill="url(#exhaust2)"
-            />
-            <path
-              d={`M -5 120 Q ${Math.sin(frame * 2) * 6} 160 0 185 Q ${Math.cos(frame * 2) * 6} 160 5 120`}
-              fill="url(#exhaust3)"
-            />
-          </>
-        )}
-        <BananaCharacter frame={frame} mode="astronaut" />
-      </g>
+
+      {showBoarding && (
+        <>
+          <rect x={880} y={720} width={12} height={120} fill="#94A3B8" rx={2} />
+          <line x1={892} y1={720} x2={960} y2={660} stroke="#94A3B8" strokeWidth={8} />
+          <BananaCharacter frame={frame} mode="boarding" />
+        </>
+      )}
+
+      {frame >= 1800 && (
+        <g transform={`translate(${960 + jitterX}, ${rocketY})`}>
+          <ellipse cx={0} cy={60} rx={55} ry={120} fill="#22C55E" />
+          <ellipse cx={0} cy={-20} rx={45} ry={50} fill="#4ADE80" opacity={0.5} />
+          <circle cx={0} cy={-30} r={38} fill="none" stroke="#94A3B8" strokeWidth={3} opacity={0.5} />
+          {frame >= 1880 && frame < 1950 && (
+            <>
+              <path
+                d={`M -20 120 Q ${Math.sin(frame) * 10} 180 0 220 Q ${Math.cos(frame) * 10} 180 20 120`}
+                fill="url(#exhaust1)"
+              />
+              <path
+                d={`M -10 120 Q ${Math.sin(frame * 1.5) * 8} 170 0 200 Q ${Math.cos(frame * 1.5) * 8} 170 10 120`}
+                fill="url(#exhaust2)"
+              />
+              <path
+                d={`M -5 120 Q ${Math.sin(frame * 2) * 6} 160 0 185 Q ${Math.cos(frame * 2) * 6} 160 5 120`}
+                fill="url(#exhaust3)"
+              />
+            </>
+          )}
+        </g>
+      )}
     </>
   );
 };
@@ -199,18 +276,29 @@ export const SceneScience: React.FC<SceneScienceProps> = ({
 
   const yawnRadius = localFrame >= 430 && localFrame <= 450 ? 32 : 0;
 
+  const growthSubtitle = frame >= 690 && frame <= 1140 && (
+    <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="growthStage" y={950} />
+  );
+
+  const spotlightSubtitle = frame >= 1350 && frame <= 1470 && (
+    <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="spotlightGrow" y={950} />
+  );
+
+  const lightLoveSubtitle = frame >= 1500 && frame <= 1620 && (
+    <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="lightLove" y={950} />
+  );
+
+  const flyToSunSubtitle = frame >= 1650 && frame <= 1770 && (
+    <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="flyToSun" y={950} />
+  );
+
   if (localFrame < 200) {
     return (
       <>
         <rect width={1920} height={1080} fill="#064e3b" />
-        <ChalkboardDrawing />
+        <ChalkboardDrawing frame={frame} />
         <BananaCharacter frame={frame} mode="scientist" />
-        <SubtitleOverlay
-          show={showSubtitles}
-          language={subtitleLanguage}
-          keyName="science"
-          y={950}
-        />
+        {growthSubtitle}
       </>
     );
   }
@@ -219,40 +307,47 @@ export const SceneScience: React.FC<SceneScienceProps> = ({
     return (
       <>
         <LivingRoom spineSag={spineSag} yawnRadius={yawnRadius} frame={frame} />
+        {growthSubtitle}
         {localFrame >= 430 && (
-          <SubtitleOverlay
-            show={showSubtitles}
-            language={subtitleLanguage}
-            keyName="teen"
-            y={950}
-          />
+          <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="teen" y={950} />
         )}
       </>
     );
   }
 
   if (localFrame < 750) {
-    return <FruitBowlMontage frame={frame} />;
+    return (
+      <>
+        <FruitBowlMontage frame={frame} />
+        {growthSubtitle}
+        {spotlightSubtitle}
+      </>
+    );
   }
 
   if (localFrame < 900) {
-    return <ConcertMontage frame={frame} />;
+    return (
+      <>
+        <ConcertMontage frame={frame} />
+        {lightLoveSubtitle}
+      </>
+    );
   }
 
   if (localFrame < 1050) {
-    return <RedCarpetMontage frame={frame} />;
+    return (
+      <>
+        <RedCarpetMontage frame={frame} />
+        {flyToSunSubtitle}
+      </>
+    );
   }
 
   return (
     <>
       <SpaceExpedition frame={frame} />
       {localFrame >= 1200 && (
-        <SubtitleOverlay
-          show={showSubtitles}
-          language={subtitleLanguage}
-          keyName="rocket"
-          y={950}
-        />
+        <SubtitleOverlay show={showSubtitles} language={subtitleLanguage} keyName="rocket" y={950} />
       )}
     </>
   );

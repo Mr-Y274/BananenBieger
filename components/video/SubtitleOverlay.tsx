@@ -6,6 +6,7 @@ interface SubtitleOverlayProps {
   language: "de" | "en";
   keyName: keyof typeof SUBTITLES;
   y?: number;
+  fontSize?: number;
 }
 
 export const SubtitleOverlay: React.FC<SubtitleOverlayProps> = ({
@@ -13,6 +14,7 @@ export const SubtitleOverlay: React.FC<SubtitleOverlayProps> = ({
   language,
   keyName,
   y = 920,
+  fontSize = 42,
 }) => {
   if (!show) return null;
   return (
@@ -24,7 +26,7 @@ export const SubtitleOverlay: React.FC<SubtitleOverlayProps> = ({
       stroke="#000000"
       strokeWidth={3}
       paintOrder="stroke"
-      fontSize={42}
+      fontSize={fontSize}
       fontFamily="Impact, Charcoal, sans-serif"
       filter="drop-shadow(2px 2px 4px rgba(0,0,0,0.8))"
     >

@@ -1,7 +1,9 @@
+import { TOTAL_DURATION_FRAMES } from "./utils/timeline";
+
 export const VIDEO_FPS = 30;
 export const VIDEO_WIDTH = 1920;
 export const VIDEO_HEIGHT = 1080;
-export const VIDEO_DURATION_FRAMES = 2850;
+export const VIDEO_DURATION_FRAMES = TOTAL_DURATION_FRAMES;
 
 export interface VideoProps {
   showSubtitles: boolean;
@@ -41,6 +43,30 @@ export const SUBTITLES: Record<string, Record<"de" | "en", string>> = {
   villain: {
     de: "Ist mir egal! Es ist nämlich alles mein fieser, fieser Plan, damit ich die Welt beherrschen kann!",
     en: "I do not care! Because it is all my evil, evil masterplan to dominate the entire world!",
+  },
+  storyReveal: {
+    de: "Nein!! Wenn das rauskommt, wird meine Geschichte nicht mehr erzählt",
+    en: "No!! If this gets out, my story will no longer be told",
+  },
+  scienceIntro: {
+    de: "Das stimmt doch gar nicht, da gibt es eine Wissenschaftliche Erklärung für",
+    en: "That is not true at all, there is a scientific explanation for that",
+  },
+  growthStage: {
+    de: "Im Anfangstadium wachsen die Bananen noch normal nach unten",
+    en: "In the early stage, bananas still grow normally downward",
+  },
+  spotlightGrow: {
+    de: "Das Rampenlicht hilft mir zu wachsen",
+    en: "The spotlight helps me grow",
+  },
+  lightLove: {
+    de: "Das Licht ist soooo toll! Ich will ihm entgegen.",
+    en: "The light is soooo great! I want to reach for it.",
+  },
+  flyToSun: {
+    de: "Ich flieg jetzt zur Sonne. Dann werd ich noch größer",
+    en: "I am flying to the sun now. Then I will get even bigger",
   },
 };
 

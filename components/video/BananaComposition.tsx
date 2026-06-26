@@ -1,10 +1,13 @@
 import React from "react";
 import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AudioLayer } from "./AudioLayer";
 import type { VideoProps } from "./types";
+import { SceneCredits } from "./scenes/SceneCredits";
 import { SceneFinale } from "./scenes/SceneFinale";
 import { SceneIntro } from "./scenes/SceneIntro";
 import { SceneScience } from "./scenes/SceneScience";
 import { SceneWildWest } from "./scenes/SceneWildWest";
+import { MAIN_CONTENT_FRAMES, mapPlaybackToContent } from "./utils/timeline";
 
 export type { VideoProps } from "./types";
 export {
@@ -18,9 +21,13 @@ export const BananaComposition: React.FC<VideoProps> = ({
   showSubtitles,
   subtitleLanguage,
 }) => {
-  const frame = useCurrentFrame();
+  const playbackFrame = useCurrentFrame();
+  const frame = mapPlaybackToContent(playbackFrame);
 
   const renderScene = () => {
+    if (playbackFrame >= MAIN_CONTENT_FRAMES) {
+      return <SceneCredits frame={playbackFrame - MAIN_CONTENT_FRAMES} />;
+    }
     if (frame < 150) {
       return (
         <SceneIntro
@@ -59,6 +66,7 @@ export const BananaComposition: React.FC<VideoProps> = ({
 
   return (
     <AbsoluteFill style={{ backgroundColor: "#000" }}>
+      <AudioLayer />
       <svg
         viewBox="0 0 1920 1080"
         width={1920}

@@ -3,9 +3,11 @@ import { Easing, interpolate } from "remotion";
 
 interface BananaCharacterProps {
   frame: number;
-  mode?: "assault" | "scientist" | "teen" | "celebrity" | "fruitbowl" | "astronaut" | "knocked";
+  mode?: "assault" | "scientist" | "teen" | "celebrity" | "fruitbowl" | "astronaut" | "knocked" | "boarding";
   spineSag?: number;
   yawnRadius?: number;
+  characterScale?: number;
+  showMuscles?: boolean;
 }
 
 export const BananaCharacter: React.FC<BananaCharacterProps> = ({
@@ -13,6 +15,8 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
   mode = "assault",
   spineSag = 0,
   yawnRadius = 0,
+  characterScale = 1,
+  showMuscles = false,
 }) => {
   let x = -864;
   let y = 1080;
@@ -68,12 +72,20 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
     y = 750;
     showSwatter = false;
     bodyTilt = Math.sin(frame * 0.15) * 8;
-  } else if (mode === "astronaut") {
-    x = 960;
-    y = frame >= 1920 ? interpolate(frame, [1920, 1950], [700, -200], {
+  } else if (mode === "boarding") {
+    const boardT = interpolate(frame, [1860, 1915], [0, 1], {
       extrapolateLeft: "clamp",
       extrapolateRight: "clamp",
-    }) : 700;
+      easing: Easing.bezier(0.25, 0.1, 0.25, 1),
+    });
+    x = interpolate(boardT, [0, 0.4, 0.7, 1], [820, 900, 960, 960]);
+    y = interpolate(boardT, [0, 0.4, 0.7, 1], [900, 780, 720, 680]);
+    bodyTilt = interpolate(boardT, [0, 0.5, 1], [0, -20, 0]);
+    showSwatter = false;
+    showHelmet = boardT > 0.5;
+  } else if (mode === "astronaut") {
+    x = 960;
+    y = 700;
     showSwatter = false;
     showHelmet = true;
   } else if (mode === "knocked") {
@@ -87,8 +99,16 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
   const spineMidY = 580 + spineSag;
 
   return (
-    <g transform={`translate(${x}, ${y}) rotate(${bodyTilt})`}>
-      {/* Body path with optional spine sag */}
+    <g transform={`translate(${x}, ${y}) rotate(${bodyTilt}) scale(${characterScale})`}>
+      {showMuscles && (
+        <>
+          <ellipse cx={-75} cy={-10} rx={28} ry={40} fill="#F9A825" stroke="#E65100" strokeWidth={2} />
+          <ellipse cx={75} cy={-10} rx={28} ry={40} fill="#F9A825" stroke="#E65100" strokeWidth={2} />
+          <path d="M -55 -30 Q -75 -50 -90 -25" fill="none" stroke="#E65100" strokeWidth={3} strokeLinecap="round" />
+          <path d="M 55 -30 Q 75 -50 90 -25" fill="none" stroke="#E65100" strokeWidth={3} strokeLinecap="round" />
+        </>
+      )}
+
       <path
         d={
           mode === "teen"
@@ -100,10 +120,8 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
         strokeWidth={2}
       />
 
-      {/* Face */}
       <circle cx={0} cy={mode === "teen" ? -20 : -30} r={35} fill="#FFE082" />
 
-      {/* Glasses */}
       {showGlasses && (
         <g transform="translate(0, -30)">
           <circle cx={-18} cy={0} r={16} fill="none" stroke="#000" strokeWidth={4} />
@@ -112,12 +130,10 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
         </g>
       )}
 
-      {/* Helmet */}
       {showHelmet && (
         <circle cx={0} cy={-30} r={55} fill="none" stroke="#94A3B8" strokeWidth={4} opacity={0.6} />
       )}
 
-      {/* Eyes */}
       {crossedEyes ? (
         <g transform="translate(0, -30)">
           <line x1={-20} y1={-10} x2={-8} y2={5} stroke="#000" strokeWidth={3} />
@@ -130,12 +146,10 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
         </>
       )}
 
-      {/* Yawn */}
       {yawnRadius > 0 && (
         <circle cx={0} cy={-15} r={yawnRadius} fill="#5D4037" />
       )}
 
-      {/* Smartphone glow for teen */}
       {mode === "teen" && (
         <g transform="translate(80, -10)">
           <rect x={0} y={0} width={30} height={50} fill="#1E293B" rx={4} />
@@ -143,7 +157,6 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
         </g>
       )}
 
-      {/* Fly swatter weapon */}
       {showSwatter && (
         <g transform={`translate(30, -20) rotate(${weaponAngle})`}>
           <line x1={0} y1={0} x2={80} y2={0} stroke="#8D6E63" strokeWidth={4} />
@@ -159,14 +172,12 @@ export const BananaCharacter: React.FC<BananaCharacterProps> = ({
         </g>
       )}
 
-      {/* Pointer stick for scientist */}
       {mode === "scientist" && (
         <g transform="translate(40, -10) rotate(-30)">
           <line x1={0} y1={0} x2={120} y2={-80} stroke="#8D6E63" strokeWidth={5} />
         </g>
       )}
 
-      {/* Phone in space */}
       {mode === "astronaut" && frame >= 1950 && (
         <g transform="translate(60, -40) rotate(15)">
           <rect x={0} y={0} width={35} height={60} fill="#1E293B" rx={5} />

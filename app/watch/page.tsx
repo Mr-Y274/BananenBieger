@@ -1,14 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { Player } from "@remotion/player";
-import {
-  BananaComposition,
-  VIDEO_DURATION_FRAMES,
-  VIDEO_FPS,
-  VIDEO_HEIGHT,
-  VIDEO_WIDTH,
-} from "@/components/video/BananaComposition";
+import dynamic from "next/dynamic";
+import type { VideoProps } from "@/components/video/types";
+
+const VideoPlayer = dynamic<VideoProps>(
+  () => import("@/components/video/VideoPlayer").then((m) => m.VideoPlayer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="w-full h-full flex items-center justify-center bg-black text-slate-400 text-sm">
+        Video wird geladen…
+      </div>
+    ),
+  }
+);
 
 interface Comment {
   id: string;
@@ -200,19 +206,9 @@ export default function WatchPage() {
       <main className="max-w-[1750px] mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8 p-4 lg:p-8">
         <section className="lg:col-span-2 flex flex-col">
           <div className="aspect-video w-full rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-200/90 relative group">
-            <Player
-              component={BananaComposition}
-              durationInFrames={VIDEO_DURATION_FRAMES}
-              fps={VIDEO_FPS}
-              compositionWidth={VIDEO_WIDTH}
-              compositionHeight={VIDEO_HEIGHT}
-              style={{ width: "100%", height: "100%" }}
-              controls
-              acknowledgeRemotionLicense
-              inputProps={{
-                showSubtitles: subtitlesEnabled,
-                subtitleLanguage: subtitleLang,
-              }}
+            <VideoPlayer
+              showSubtitles={subtitlesEnabled}
+              subtitleLanguage={subtitleLang}
             />
           </div>
 
